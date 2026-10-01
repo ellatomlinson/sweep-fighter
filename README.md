@@ -5,9 +5,9 @@ A ceiling webcam tracks the neon-pink Roomba, splits the arena into a 3×3 grid,
 and presses a Street Fighter II input for whichever cell he's in (Fish-Plays-Pokémon style).
 
 ```
- JUMP BACK | JUMP     | JUMP FWD
+ HADOUKEN  | JUMP     | JUMP FWD
  PUNCH     | HADOUKEN | KICK
- WALK BACK | CROUCH   | WALK FWD
+ PUNCH 2   | CROUCH   | KICK 2
 ```
 
 ## Setup

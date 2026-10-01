@@ -25,11 +25,11 @@ DEFAULT_CONFIG = {
     # Arena corners in image pixels (TL, TR, BR, BL). None = whole frame.
     "arena": None,
     "hold_frames": 5,       # frames Roomba must stay in a cell before it fires
-    "repeat_seconds": 0.6,  # re-fire the cell's action while he stays there
+    "repeat_seconds": 0.3,  # re-fire the cell's action while he stays there
     "press_seconds": 0.08,
-    "grid": [
-        [{"name": "JUMP BACK", "seq": [["up", "left"]]},
-         {"name": "JUMP", "seq": [["up"]]},
+"grid": [
+        [{"name": "HADOUKEN", "seq": [["down"], ["down", "right"], ["right", "a"]]},
+         {"name": "JUMP BACK", "seq": [["up", "left"]]},
          {"name": "JUMP FWD", "seq": [["up", "right"]]}],
         [{"name": "PUNCH", "seq": [["a"]]},
          {"name": "HADOUKEN", "seq": [["down"], ["down", "right"], ["right", "a"]]},
@@ -48,6 +48,11 @@ def load_config():
     cfg = dict(DEFAULT_CONFIG)
     if CONFIG_PATH.exists():
         cfg.update(json.loads(CONFIG_PATH.read_text()))
+        # Add the corner Hadouken to configs saved before that grid change,
+        # keeping the existing center Hadouken.
+        top_left = cfg["grid"][0][0]
+        if top_left["name"] == "JUMP BACK":
+            cfg["grid"][0][0] = DEFAULT_CONFIG["grid"][0][0]
         # Replace these original defaults in existing saved configs, without
         # overwriting any custom grid actions or camera/arena calibration.
         for row, col in ((2, 0), (2, 2)):
