@@ -15,7 +15,8 @@ CONFIG_PATH = Path(__file__).with_name("config.json")
 
 # 3x3 grid, read as the camera sees it (row 0 = top of the image).
 # Each cell is a list of "moves"; a move is a list of keys held together.
-# Keys match RetroArch/OpenEmu defaults-ish; change them to fit your emulator.
+# Browser game mapping: arrows = directions, a = X, z = A.
+# Change the grid sequences below if the game's button roles differ.
 DEFAULT_CONFIG = {
     "camera": 0,
     "hsv_lower": [140, 80, 80],
@@ -33,9 +34,9 @@ DEFAULT_CONFIG = {
         [{"name": "PUNCH", "seq": [["a"]]},
          {"name": "HADOUKEN", "seq": [["down"], ["down", "right"], ["right", "a"]]},
          {"name": "KICK", "seq": [["z"]]}],
-        [{"name": "WALK BACK", "seq": [["left"]]},
+        [{"name": "PUNCH 2 (B)", "seq": [["x"]]},
          {"name": "CROUCH", "seq": [["down"]]},
-         {"name": "WALK FWD", "seq": [["right"]]}],
+         {"name": "KICK 2 (Y)", "seq": [["s"]]}],
     ],
 }
 
@@ -47,6 +48,12 @@ def load_config():
     cfg = dict(DEFAULT_CONFIG)
     if CONFIG_PATH.exists():
         cfg.update(json.loads(CONFIG_PATH.read_text()))
+        # Replace these original defaults in existing saved configs, without
+        # overwriting any custom grid actions or camera/arena calibration.
+        for row, col in ((2, 0), (2, 2)):
+            old_action = cfg["grid"][row][col]
+            if old_action["name"] in {"WALK BACK", "WALK FWD"}:
+                cfg["grid"][row][col] = DEFAULT_CONFIG["grid"][row][col]
     return cfg
 
 
