@@ -1,5 +1,5 @@
 # sweep-fighter
-Make my Roomba (Barry) play Street Fighter II
+For a hackathon project: Make my Roomba (Barry) play Street Fighter II
 
 A ceiling webcam tracks the Roomba (with neon pink paper on it), splits the arena into a 3×3 grid,
 and presses a Street Fighter II input for whichever cell he's in.
