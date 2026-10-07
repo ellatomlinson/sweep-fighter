@@ -1,22 +1,14 @@
-"""Sweep Fighter: a ceiling webcam tracks a neon-pink Roomba and turns its
-position in the arena into Street Fighter II button presses."""
-
 import argparse
 import json
 import time
 from collections import deque
 from pathlib import Path
-
 import cv2
 import numpy as np
 from pynput.keyboard import Controller, Key
 
 CONFIG_PATH = Path(__file__).with_name("config.json")
 
-# 3x3 grid, read as the camera sees it (row 0 = top of the image).
-# Each cell is a list of "moves"; a move is a list of keys held together.
-# Browser game mapping: arrows = directions, a = X, z = A.
-# Change the grid sequences below if the game's button roles differ.
 DEFAULT_CONFIG = {
     "camera": 0,
     "hsv_lower": [140, 80, 80],
@@ -26,10 +18,12 @@ DEFAULT_CONFIG = {
     "arena": None,
     "hold_frames": 5,       # frames Roomba must stay in a cell before it fires
     "repeat_seconds": 0.3,  # re-fire the cell's action while he stays there
-    "press_seconds": 0.08,
-"grid": [
+    "press_seconds": 0.08,  # how long a key is pressed
+
+    # The 3x3 grid of actions corresponding to the arena cells.
+    "grid": [
         [{"name": "HADOUKEN", "seq": [["down"], ["down", "right"], ["right", "a"]]},
-         {"name": "JUMP BACK", "seq": [["up", "left"]]},
+         {"name": "JUMP", "seq": [["up"]]},
          {"name": "JUMP FWD", "seq": [["up", "right"]]}],
         [{"name": "PUNCH", "seq": [["a"]]},
          {"name": "HADOUKEN", "seq": [["down"], ["down", "right"], ["right", "a"]]},
@@ -48,17 +42,6 @@ def load_config():
     cfg = dict(DEFAULT_CONFIG)
     if CONFIG_PATH.exists():
         cfg.update(json.loads(CONFIG_PATH.read_text()))
-        # Add the corner Hadouken to configs saved before that grid change,
-        # keeping the existing center Hadouken.
-        top_left = cfg["grid"][0][0]
-        if top_left["name"] == "JUMP BACK":
-            cfg["grid"][0][0] = DEFAULT_CONFIG["grid"][0][0]
-        # Replace these original defaults in existing saved configs, without
-        # overwriting any custom grid actions or camera/arena calibration.
-        for row, col in ((2, 0), (2, 2)):
-            old_action = cfg["grid"][row][col]
-            if old_action["name"] in {"WALK BACK", "WALK FWD"}:
-                cfg["grid"][row][col] = DEFAULT_CONFIG["grid"][row][col]
     return cfg
 
 
@@ -83,7 +66,6 @@ def find_roomba(frame, cfg):
 
 
 def arena_transform(cfg, w, h):
-    """Homography from image pixels to a unit square, so a tilted camera works."""
     src = np.float32(cfg["arena"] or [[0, 0], [w, 0], [w, h], [0, h]])
     dst = np.float32([[0, 0], [1, 0], [1, 1], [0, 1]])
     return cv2.getPerspectiveTransform(src, dst), src

@@ -2,13 +2,16 @@
 Make my Roomba play Street Fighter II
 
 A ceiling webcam tracks the neon-pink Roomba, splits the arena into a 3×3 grid,
-and presses a Street Fighter II input for whichever cell he's in (Fish-Plays-Pokémon style).
+and presses a Street Fighter II input for whichever cell he's in.
 
 ```
- HADOUKEN  | JUMP     | JUMP FWD
- PUNCH     | HADOUKEN | KICK
- PUNCH 2   | CROUCH   | KICK 2
+ HADOUKEN | JUMP     | JUMP FWD
+ PUNCH    | HADOUKEN | KICK
+ PUNCH 2  | CROUCH   | KICK 2
 ```
+
+The top-left and center squares trigger Hadouken. The other squares map to jumps,
+punches, kicks, or crouch.
 
 ## Setup
 ```sh
